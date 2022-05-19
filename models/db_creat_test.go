@@ -5,7 +5,7 @@ import (
 )
 
 func TestInitDB(t *testing.T) {
-	InitDB()
+	//InitDB()
 
 	v := &Video{
 		Title: "hhh",

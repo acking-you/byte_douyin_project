@@ -4,10 +4,6 @@ import (
 	"github.com/ACking-you/byte_douyin_project/models"
 )
 
-type VideoList struct {
-	Videos []*models.Video `json:"video_list,omitempty"`
-}
-
 func QueryVideoListDemo() (*VideoList, error) {
 	return &VideoList{Videos: models.DemoVideos}, nil
 	//videos := &VideoList{}

@@ -50,3 +50,18 @@ func (v *VideoDAO) QueryVideoCountByUserId(userId int64, count *int64) error {
 	}
 	return DB.Model(&Video{}).Where("user_info_id=?", userId).Count(count).Error
 }
+
+func (v *VideoDAO) QueryVideoListByUserId(userId int64, videoList *[]*Video) error {
+	if videoList == nil {
+		return errors.New("QueryVideoListByUserId videoList 空指针")
+	}
+	return DB.Where("user_info_id=?", userId).Find(videoList).Error
+}
+
+// QueryVideoListByLimitAndTime  返回按投稿时间倒序的视频列表，并限制为最多limit个
+func (v *VideoDAO) QueryVideoListByLimitAndTime(limit int, latestTime time.Time, videoList *[]*Video) error {
+	if videoList == nil {
+		return errors.New("QueryVideoListByLimit videoList 空指针")
+	}
+	return DB.Model(&Video{}).Where("created_at<=?", latestTime).Order("created_at ASC").Limit(limit).Find(videoList).Error
+}

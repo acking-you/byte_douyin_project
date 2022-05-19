@@ -15,13 +15,13 @@ func InitDouyinRouter() *gin.Engine {
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
-	apiRouter.GET("/feed/", handlers.FeedHandler)
+	apiRouter.GET("/feed/", handlers.FeedVideoListHandler)
 
 	apiRouter.GET("/user/", handlers.UserInfoHandler)
 
 	apiRouter.POST("/user/login/", handlers.UserLoginHandler)
 	apiRouter.POST("/user/register/", handlers.UserRegisterHandler)
-
 	apiRouter.POST("/publish/action/", handlers.PublishVideoHandler)
+	apiRouter.GET("/publish/list/", handlers.QueryVideoListHandler)
 	return r
 }

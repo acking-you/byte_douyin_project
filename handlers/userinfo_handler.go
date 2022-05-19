@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/ACking-you/byte_douyin_project/models"
+	"github.com/ACking-you/byte_douyin_project/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -13,36 +14,73 @@ type UserResponse struct {
 }
 
 func UserInfoHandler(c *gin.Context) {
+	p := NewProxyUserInfo(c)
+	//根据user_id查询
 	rawId := c.Query("user_id")
-	userId, err := strconv.ParseInt(rawId, 10, 64)
-	if err != nil {
-		UserInfoError(c, "id解析错误")
+	err := p.DoQueryUserInfoByUserId(rawId)
+	//未发生错误，则就不用再使用token字段了
+	if err == nil {
 		return
 	}
-	//TODO 由于传来的直接就有用户的id信息，没必要再鉴权得到id，token可以方便以后进行真正的鉴权系统（用户权限，目前尚未开发
-	_ = c.Query("token")
 
+	//根据token查询
+	token := c.Query("token")
+	err = p.DoQueryUserInfoByToken(token)
+	if err != nil {
+		p.UserInfoError(err.Error())
+	}
+}
+
+type ProxyUserInfo struct {
+	c *gin.Context
+}
+
+func NewProxyUserInfo(c *gin.Context) *ProxyUserInfo {
+	return &ProxyUserInfo{c: c}
+}
+
+func (p *ProxyUserInfo) DoQueryUserInfoByUserId(rawId string) error {
+	userId, err := strconv.ParseInt(rawId, 10, 64)
+	if err != nil {
+		return err
+	}
 	//由于得到userinfo不需要组装model层的数据，所以直接调用model层的接口
 	userinfoDAO := models.NewUserInfoDAO()
 
 	var userInfo models.UserInfo
 	err = userinfoDAO.QueryUserInfoById(userId, &userInfo)
 	if err != nil {
-		UserInfoError(c, err.Error())
-		return
+		return err
 	}
-
-	UserInfoOk(c, &userInfo)
+	p.UserInfoOk(&userInfo)
+	return nil
 }
 
-func UserInfoError(c *gin.Context, msg string) {
-	c.JSON(http.StatusOK, UserResponse{
+func (p *ProxyUserInfo) DoQueryUserInfoByToken(token string) error {
+	userId, err := service.JWTAuth(token)
+	if err != nil {
+		return err
+	}
+	//由于得到userinfo不需要组装model层的数据，所以直接调用model层的接口
+	userinfoDAO := models.NewUserInfoDAO()
+
+	var userInfo models.UserInfo
+	err = userinfoDAO.QueryUserInfoById(userId, &userInfo)
+	if err != nil {
+		return err
+	}
+	p.UserInfoOk(&userInfo)
+	return nil
+}
+
+func (p *ProxyUserInfo) UserInfoError(msg string) {
+	p.c.JSON(http.StatusOK, UserResponse{
 		Response: models.Response{StatusCode: 1, StatusMsg: msg},
 	})
 }
 
-func UserInfoOk(c *gin.Context, user *models.UserInfo) {
-	c.JSON(http.StatusOK, UserResponse{
+func (p *ProxyUserInfo) UserInfoOk(user *models.UserInfo) {
+	p.c.JSON(http.StatusOK, UserResponse{
 		Response: models.Response{StatusCode: 0},
 		User:     user,
 	})
