@@ -18,29 +18,33 @@ func InitDB() {
 	if err != nil {
 		panic(err)
 	}
-	db := DB.Migrator()
-	if !db.HasTable(&UserInfo{}) {
-		err := db.CreateTable(&UserInfo{})
-		if err != nil {
-			panic(err)
-		}
+	err = DB.AutoMigrate(&UserInfo{}, &Video{}, &Comment{}, &UserLogin{})
+	if err != nil {
+		panic(err)
 	}
-	if !db.HasTable(&Comment{}) {
-		err := db.CreateTable(&Comment{})
-		if err != nil {
-			panic(err)
-		}
-	}
-	if !db.HasTable(&Video{}) {
-		err := db.CreateTable(&Video{})
-		if err != nil {
-			panic(err)
-		}
-	}
-	if !db.HasTable(&UserLogin{}) {
-		err := db.CreateTable(&UserLogin{})
-		if err != nil {
-			panic(err)
-		}
-	}
+	//db := DB.Migrator()
+	//if !db.HasTable(&UserInfo{}) {
+	//	err := db.CreateTable(&UserInfo{})
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
+	//if !db.HasTable(&Video{}) {
+	//	err := db.CreateTable(&Video{})
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
+	//if !db.HasTable(&Comment{}) {
+	//	err := db.CreateTable(&Comment{})
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
+	//if !db.HasTable(&UserLogin{}) {
+	//	err := db.CreateTable(&UserLogin{})
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
 }

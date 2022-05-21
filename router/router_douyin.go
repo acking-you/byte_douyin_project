@@ -16,12 +16,15 @@ func InitDouyinRouter() *gin.Engine {
 
 	// basic apis
 	apiRouter.GET("/feed/", handlers.FeedVideoListHandler)
-
 	apiRouter.GET("/user/", handlers.UserInfoHandler)
-
 	apiRouter.POST("/user/login/", handlers.UserLoginHandler)
 	apiRouter.POST("/user/register/", handlers.UserRegisterHandler)
 	apiRouter.POST("/publish/action/", handlers.PublishVideoHandler)
 	apiRouter.GET("/publish/list/", handlers.QueryVideoListHandler)
+
+	//extend 1
+	apiRouter.POST("/favorite/action/", handlers.PostFavorHandler)
+	apiRouter.GET("/favorite/list/", handlers.QueryFavorVideoListHandler)
+
 	return r
 }

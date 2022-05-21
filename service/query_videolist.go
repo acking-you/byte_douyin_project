@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/ACking-you/byte_douyin_project/cache"
 	"github.com/ACking-you/byte_douyin_project/models"
 )
 
@@ -52,14 +53,16 @@ func (q *QueryVideoListByUserIdFlow) packData() error {
 	//作者信息查询
 	var userInfo models.UserInfo
 	err = models.NewUserInfoDAO().QueryUserInfoById(q.userId, &userInfo)
+	p := cache.NewProxyIndexMap()
 	if err != nil {
 		return err
 	}
-	//填充Author字段
+	//填充信息(Author和IsFavorite字段
 	for i := range q.videos {
 		q.videos[i].Author = userInfo
+		q.videos[i].IsFavorite = p.GetVideoFavorState(q.userId, q.videos[i].Id)
 	}
-	//手动填充作者信息
+
 	q.videoList = &VideoList{Videos: q.videos}
 
 	return nil

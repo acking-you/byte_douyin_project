@@ -7,11 +7,11 @@ import (
 func TestInitDB(t *testing.T) {
 	//InitDB()
 
-	v := &Video{
-		Title: "hhh",
-	}
+	//v := &Video{
+	//	Title: "hhh",
+	//}
 	var userInfo = UserInfo{
-		Videos: []*Video{v},
+		//Videos: []*Video{v},
 	}
 	DB.Where("id=?", 1).Save(&userInfo)
 	//for _,video := range videos{
