@@ -32,7 +32,7 @@ func TestAddComment(t *testing.T) {
 		User:       UserInfo{},
 		Content:    "你好",
 	}
-	err := NewCommentDAO().AddComment(&c)
+	err := NewCommentDAO().AddCommentAndUpdateCount(&c)
 	if err != nil {
 		panic(err)
 	}

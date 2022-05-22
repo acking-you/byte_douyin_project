@@ -1,7 +1,7 @@
 package service
 
 import (
-	"errors"
+	"fmt"
 	"github.com/ACking-you/byte_douyin_project/models"
 	"github.com/ACking-you/byte_douyin_project/util"
 )
@@ -42,10 +42,10 @@ func (q *QueryCommentListFlow) Do() (*CommentList, error) {
 
 func (q *QueryCommentListFlow) checkNum() error {
 	if !models.NewUserInfoDAO().IsUserExistById(q.userId) {
-		return errors.New("用户处于登出状态")
+		return fmt.Errorf("用户%d处于登出状态", q.userId)
 	}
 	if !models.NewVideoDAO().IsVideoExistById(q.videoId) {
-		return errors.New("视频不存在或已经被删除")
+		return fmt.Errorf("视频%d不存在或已经被删除", q.videoId)
 	}
 	return nil
 }
@@ -56,7 +56,7 @@ func (q *QueryCommentListFlow) prepareData() error {
 		return err
 	}
 	//根据前端的要求填充正确的时间格式
-	err = util.FillCommentField(&q.comments)
+	err = util.FillCommentListFields(&q.comments)
 	if err != nil {
 		return err
 	}

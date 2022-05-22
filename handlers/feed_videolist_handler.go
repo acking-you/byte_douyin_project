@@ -19,8 +19,7 @@ func FeedVideoListHandler(c *gin.Context) {
 	token, ok := c.GetQuery("token")
 	//无登录状态
 	if !ok {
-		rawTime := c.Query("latest_time")
-		err := p.DoNoToken(rawTime)
+		err := p.DoNoToken()
 		if err != nil {
 			p.FeedVideoListError(err.Error())
 		}
@@ -43,7 +42,8 @@ func NewProxyFeedVideoList(c *gin.Context) *ProxyFeedVideoList {
 }
 
 // DoNoToken 未登录的视频流推送处理
-func (p *ProxyFeedVideoList) DoNoToken(rawTimestamp string) error {
+func (p *ProxyFeedVideoList) DoNoToken() error {
+	rawTimestamp := p.Query("latest_time")
 	var latestTime time.Time
 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
 	if err == nil {
@@ -59,8 +59,7 @@ func (p *ProxyFeedVideoList) DoNoToken(rawTimestamp string) error {
 
 // DoHasToken TODO 如果有登录状态可以根据兴趣做一些推荐
 func (p *ProxyFeedVideoList) DoHasToken(token string) error {
-
-	return nil
+	return p.DoNoToken()
 }
 
 func (p *ProxyFeedVideoList) FeedVideoListError(msg string) {

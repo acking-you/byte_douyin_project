@@ -116,7 +116,7 @@ func (v *VideoDAO) QueryFavorVideoListByUserId(userId int64, videoList *[]*Video
 		return errors.New("QueryFavorVideoListByUserId videoList 空指针")
 	}
 	//多表查询，左连接得到结果，再映射到数据
-	if err := DB.Raw("SELECT v.* FROM user_favor_videos u LEFT JOIN videos v ON u.user_info_id = ? AND u.video_id = v.id", userId).Scan(videoList).Error; err != nil {
+	if err := DB.Raw("SELECT v.* FROM user_favor_videos u , videos v WHERE u.user_info_id = ? AND u.video_id = v.id", userId).Scan(videoList).Error; err != nil {
 		return err
 	}
 	//如果id为0，则说明没有查到数据
@@ -128,7 +128,7 @@ func (v *VideoDAO) QueryFavorVideoListByUserId(userId int64, videoList *[]*Video
 
 func (v *VideoDAO) IsVideoExistById(id int64) bool {
 	var video Video
-	if err := DB.Where("id=?", id).First(&Video{}).Error; err != nil {
+	if err := DB.Where("id=?", id).Select("id").First(&video).Error; err != nil {
 		log.Println(err)
 	}
 	if video.Id == 0 {

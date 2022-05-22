@@ -26,10 +26,10 @@ func NewFileName(userId int64) string {
 	return fmt.Sprintf("%d-%d", userId, count)
 }
 
-func FillVideoFields(userId int64, videos *[]*models.Video) (*time.Time, error) {
+func FillVideoListFields(userId int64, videos *[]*models.Video) (*time.Time, error) {
 	size := len(*videos)
 	if videos == nil || size == 0 {
-		return nil, errors.New("util.FillVideoFields videos为空")
+		return nil, errors.New("util.FillVideoListFields videos为空")
 	}
 	dao := models.NewUserInfoDAO()
 	p := cache.NewProxyIndexMap()

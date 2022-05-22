@@ -65,7 +65,7 @@ func (q *QueryFeedVideoListFlow) prepareData() error {
 	}
 	//填充额外信息，这个后期通过NoSQL看能不能优化
 	//如果用户为登录状态，则更新该视频是否被该用户点赞的状态
-	latestTime, _ := util.FillVideoFields(q.userId, &q.videos) //不是致命错误，不返回
+	latestTime, _ := util.FillVideoListFields(q.userId, &q.videos) //不是致命错误，不返回
 
 	//准备好时间戳
 	if latestTime != nil {
