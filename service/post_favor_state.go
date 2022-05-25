@@ -51,7 +51,7 @@ func (p *PostFavorStateFlow) PlusOperation() error {
 	//视频点赞数目+1
 	err := models.NewVideoDAO().PlusOneFavorByUserIdAndVideoId(p.userId, p.videoId)
 	if err != nil {
-		return err
+		return errors.New("不要重复点赞")
 	}
 	//对应的用户是否点赞的映射状态更新
 	cache.NewProxyIndexMap().UpdateVideoFavorState(p.userId, p.videoId, true)
@@ -63,7 +63,7 @@ func (p *PostFavorStateFlow) MinusOperation() error {
 	//视频点赞数目-1
 	err := models.NewVideoDAO().MinusOneFavorByUserIdAndVideoId(p.userId, p.videoId)
 	if err != nil {
-		return err
+		return errors.New("点赞数目已经为0")
 	}
 	//对应的用户是否点赞的映射状态更新
 	cache.NewProxyIndexMap().UpdateVideoFavorState(p.userId, p.videoId, false)

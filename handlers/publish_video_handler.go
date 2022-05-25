@@ -51,8 +51,8 @@ func PublishVideoHandler(c *gin.Context) {
 			PublishVideoError(c, "不支持的视频格式")
 			continue
 		}
-		filename := util.NewFileName(userId) //根据userId得到唯一的文件名
-		filename += suffix
+		name := util.NewFileName(userId) //根据userId得到唯一的文件名
+		filename := name + suffix
 		savePath := filepath.Join("./static", filename)
 		err = c.SaveUploadedFile(file, savePath)
 		if err != nil {
@@ -60,9 +60,13 @@ func PublishVideoHandler(c *gin.Context) {
 			continue
 		}
 		//TODO 截取一帧画面作为封面
-
+		err = util.SaveImageFromVideo(name, true)
+		if err != nil {
+			PublishVideoError(c, err.Error())
+			continue
+		}
 		//数据库持久化
-		err := service.PostVideo(userId, filename, "暂时没有", title)
+		err := service.PostVideo(userId, filename, name+util.GetDefaultImageSuffix(), title)
 		if err != nil {
 			PublishVideoError(c, err.Error())
 			continue

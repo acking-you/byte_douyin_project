@@ -12,3 +12,8 @@ loc = "Local"
 [server]
 ip = "192.168.142.251"
 port = 8080
+
+# 用于保存资源的路径，以及用于截图工具的路径（截图工具放在lib目录
+[path]
+ffmpeg_path = "D:\\GOLandPRo\\douyin_pro\\byte_douyin_project\\lib\\ffmpeg.exe"
+static_source_path = "D:\\GOLandPRo\\douyin_pro\\byte_douyin_project\\static"

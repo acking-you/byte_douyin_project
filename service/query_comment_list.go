@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"github.com/ACking-you/byte_douyin_project/models"
 	"github.com/ACking-you/byte_douyin_project/util"
@@ -58,7 +59,7 @@ func (q *QueryCommentListFlow) prepareData() error {
 	//根据前端的要求填充正确的时间格式
 	err = util.FillCommentListFields(&q.comments)
 	if err != nil {
-		return err
+		return errors.New("暂时还没有人评论")
 	}
 	return nil
 }

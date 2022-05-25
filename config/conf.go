@@ -22,9 +22,15 @@ type Server struct {
 	Port int
 }
 
+type Path struct {
+	FfmpegPath       string `toml:"ffmpeg_path"`
+	StaticSourcePath string `toml:"static_source_path"`
+}
+
 type Config struct {
 	DB     Mysql `toml:"mysql"`
 	Server `toml:"server"`
+	Path   `toml:"path"`
 }
 
 var Info Config
