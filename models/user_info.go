@@ -2,8 +2,14 @@ package models
 
 import (
 	"errors"
+	"gorm.io/gorm"
 	"log"
 	"sync"
+)
+
+var (
+	ErrIvdPtr        = errors.New("空指针错误")
+	ErrEmptyUserList = errors.New("用户列表为空")
 )
 
 type UserInfo struct {
@@ -36,7 +42,7 @@ func NewUserInfoDAO() *UserInfoDAO {
 
 func (u *UserInfoDAO) QueryUserInfoById(userId int64, userinfo *UserInfo) error {
 	if userinfo == nil {
-		return errors.New("userinfo 指针为空")
+		return ErrIvdPtr
 	}
 	//DB.Where("id=?",userId).First(userinfo)
 	DB.Where("id=?", userId).Select([]string{"id", "name", "follow_count", "follower_count", "is_follow"}).First(userinfo)
@@ -49,7 +55,7 @@ func (u *UserInfoDAO) QueryUserInfoById(userId int64, userinfo *UserInfo) error 
 
 func (u *UserInfoDAO) AddUserInfo(userinfo *UserInfo) error {
 	if userinfo == nil {
-		return errors.New("userinfo 空指针")
+		return ErrIvdPtr
 	}
 	return DB.Create(userinfo).Error
 }
@@ -63,4 +69,61 @@ func (u *UserInfoDAO) IsUserExistById(id int64) bool {
 		return false
 	}
 	return true
+}
+func (u *UserInfoDAO) AddUserFollow(userId, userToId int64) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("UPDATE user_infos SET follow_count=follow_count+1 WHERE id = ?", userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Exec("UPDATE user_infos SET follower_count=follower_count+1 WHERE id = ?", userToId).Error; err != nil {
+			return err
+		}
+		if err := tx.Exec("INSERT INTO `user_relations` (`user_info_id`,`follow_id`) VALUES (?,?)", userId, userToId).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (u *UserInfoDAO) CancelUserFollow(userId, userToId int64) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Exec("UPDATE user_infos SET follow_count=follow_count-1 WHERE id = ? AND follow_count>0", userId).Error; err != nil {
+			return err
+		}
+		if err := tx.Exec("UPDATE user_infos SET follower_count=follower_count-1 WHERE id = ? AND follower_count>0", userToId).Error; err != nil {
+			return err
+		}
+		if err := tx.Exec("DELETE FROM `user_relations` WHERE user_info_id=? AND follow_id=?", userId, userToId).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+func (u *UserInfoDAO) GetFollowListByUserId(userId int64, userList *[]*UserInfo) error {
+	if userList == nil {
+		return ErrIvdPtr
+	}
+	var err error
+	if err = DB.Raw("SELECT u.* FROM user_relations r, user_infos u WHERE r.user_info_id = ? AND r.follow_id = u.id", userId).Scan(userList).Error; err != nil {
+		return err
+	}
+	if (*userList)[0].Id == 0 {
+		return ErrEmptyUserList
+	}
+	return nil
+}
+
+func (u *UserInfoDAO) GetFollowerListByUserId(userId int64, userList *[]*UserInfo) error {
+	if userList == nil {
+		return ErrIvdPtr
+	}
+	var err error
+	if err = DB.Raw("SELECT u.* FROM user_relations r, user_infos u WHERE r.follow_id = ? AND r.user_info_id = u.id", userId).Scan(userList).Error; err != nil {
+		return err
+	}
+	//if len(*userList) == 0 || (*userList)[0].Id == 0 {
+	//	return ErrEmptyUserList
+	//}
+	return nil
 }

@@ -9,17 +9,9 @@ import (
 
 func TestSQL(t *testing.T) {
 	InitDB()
-	var videoList []*Video
-	err := NewVideoDAO().QueryFavorVideoListByUserId(2, &videoList)
+	err := NewUserInfoDAO().CancelUserFollow(1, 2)
 	if err != nil {
 		panic(err)
-	}
-	for i := 0; i < len(videoList); i++ {
-		s, err := json.Marshal(videoList[i])
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("%#v\n", string(s))
 	}
 }
 

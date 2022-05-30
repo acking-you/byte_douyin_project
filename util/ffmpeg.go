@@ -30,8 +30,7 @@ func NewVideo2Image() *Video2Image {
 
 var videoChanger Video2Image
 
-//-i input
-
+//ffmpeg的参数
 const (
 	inputVideoPathOption = "-i"
 	startTimeOption      = "-ss"

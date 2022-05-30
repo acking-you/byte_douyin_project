@@ -27,5 +27,10 @@ func InitDouyinRouter() *gin.Engine {
 	apiRouter.GET("/favorite/list/", handlers.QueryFavorVideoListHandler)
 	apiRouter.POST("/comment/action/", handlers.PostCommentHandler)
 	apiRouter.GET("/comment/list/", handlers.QueryCommentListHandler)
+
+	//extend 2
+	apiRouter.POST("/relation/action/", handlers.PostFollowActionHandler)
+	apiRouter.GET("/relation/follow/list/", handlers.QueryFollowListHandler)
+	apiRouter.GET("/relation/follower/list/", handlers.QueryFollowerHandler)
 	return r
 }
