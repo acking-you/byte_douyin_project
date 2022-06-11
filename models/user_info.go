@@ -108,7 +108,7 @@ func (u *UserInfoDAO) GetFollowListByUserId(userId int64, userList *[]*UserInfo)
 	if err = DB.Raw("SELECT u.* FROM user_relations r, user_infos u WHERE r.user_info_id = ? AND r.follow_id = u.id", userId).Scan(userList).Error; err != nil {
 		return err
 	}
-	if (*userList)[0].Id == 0 {
+	if len(*userList) == 0 || (*userList)[0].Id == 0 {
 		return ErrEmptyUserList
 	}
 	return nil

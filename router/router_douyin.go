@@ -1,7 +1,11 @@
 package router
 
 import (
-	"github.com/ACking-you/byte_douyin_project/handlers"
+	"github.com/ACking-you/byte_douyin_project/handlers/comment"
+	"github.com/ACking-you/byte_douyin_project/handlers/user_info"
+	"github.com/ACking-you/byte_douyin_project/handlers/user_login"
+	"github.com/ACking-you/byte_douyin_project/handlers/video"
+	"github.com/ACking-you/byte_douyin_project/middleware"
 	"github.com/ACking-you/byte_douyin_project/models"
 	"github.com/gin-gonic/gin"
 )
@@ -12,25 +16,25 @@ func InitDouyinRouter() *gin.Engine {
 
 	r.Static("static", "./static")
 
-	apiRouter := r.Group("/douyin")
-
+	baseGroup := r.Group("/douyin")
+	//根据灵活性考虑是否加入JWT中间件来进行鉴权，还是在之后再做鉴权
 	// basic apis
-	apiRouter.GET("/feed/", handlers.FeedVideoListHandler)
-	apiRouter.GET("/user/", handlers.UserInfoHandler)
-	apiRouter.POST("/user/login/", handlers.UserLoginHandler)
-	apiRouter.POST("/user/register/", handlers.UserRegisterHandler)
-	apiRouter.POST("/publish/action/", handlers.PublishVideoHandler)
-	apiRouter.GET("/publish/list/", handlers.QueryVideoListHandler)
+	baseGroup.GET("/feed/", video.FeedVideoListHandler)
+	baseGroup.GET("/user/", middleware.JWTMiddleWare(), user_info.UserInfoHandler)
+	baseGroup.POST("/user/login/", middleware.SHAMiddleWare(), user_login.UserLoginHandler)
+	baseGroup.POST("/user/register/", middleware.SHAMiddleWare(), user_login.UserRegisterHandler)
+	baseGroup.POST("/publish/action/", middleware.JWTMiddleWare(), video.PublishVideoHandler)
+	baseGroup.GET("/publish/list/", middleware.JWTMiddleWare(), video.QueryVideoListHandler)
 
 	//extend 1
-	apiRouter.POST("/favorite/action/", handlers.PostFavorHandler)
-	apiRouter.GET("/favorite/list/", handlers.QueryFavorVideoListHandler)
-	apiRouter.POST("/comment/action/", handlers.PostCommentHandler)
-	apiRouter.GET("/comment/list/", handlers.QueryCommentListHandler)
+	baseGroup.POST("/favorite/action/", middleware.JWTMiddleWare(), video.PostFavorHandler)
+	baseGroup.GET("/favorite/list/", middleware.JWTMiddleWare(), video.QueryFavorVideoListHandler)
+	baseGroup.POST("/comment/action/", middleware.JWTMiddleWare(), comment.PostCommentHandler)
+	baseGroup.GET("/comment/list/", middleware.JWTMiddleWare(), comment.QueryCommentListHandler)
 
 	//extend 2
-	apiRouter.POST("/relation/action/", handlers.PostFollowActionHandler)
-	apiRouter.GET("/relation/follow/list/", handlers.QueryFollowListHandler)
-	apiRouter.GET("/relation/follower/list/", handlers.QueryFollowerHandler)
+	baseGroup.POST("/relation/action/", middleware.JWTMiddleWare(), user_info.PostFollowActionHandler)
+	baseGroup.GET("/relation/follow/list/", middleware.JWTMiddleWare(), user_info.QueryFollowListHandler)
+	baseGroup.GET("/relation/follower/list/", middleware.JWTMiddleWare(), user_info.QueryFollowerHandler)
 	return r
 }

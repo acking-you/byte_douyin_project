@@ -120,7 +120,7 @@ func (v *VideoDAO) QueryFavorVideoListByUserId(userId int64, videoList *[]*Video
 		return err
 	}
 	//如果id为0，则说明没有查到数据
-	if (*videoList)[0].Id == 0 {
+	if len(*videoList) == 0 || (*videoList)[0].Id == 0 {
 		return errors.New("点赞列表为空")
 	}
 	return nil
