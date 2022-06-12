@@ -19,7 +19,7 @@
 [issues-shield]: https://img.shields.io/github/issues/ACking-you/byte_douyin_project.svg?style=flat-square
 [issues-url]: https://img.shields.io/github/issues/ACking-you/byte_douyin_project.svg
 [license-shield]: https://img.shields.io/github/license/ACking-you/byte_douyin_project?style=flat-square
-[license-url]: https://github.com/ACking-you/byte_douyin_project/blob/master/LICENSE.txt
+[license-url]: https://github.com/ACking-you/byte_douyin_project/blob/master/LICENSE
 
 
 
