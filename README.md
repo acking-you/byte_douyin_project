@@ -1,3 +1,27 @@
+
+# 抖音极简版
+<!-- PROJECT SHIELDS -->
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
+<!-- links -->
+[your-project-path]:ACking-you/byte_douyin_project
+[contributors-shield]: https://img.shields.io/github/contributors/ACking-you/byte_douyin_project.svg?style=flat-square
+[contributors-url]: https://github.com/ACking-you/byte_douyin_project/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ACking-you/byte_douyin_project.svg?style=flat-square
+[forks-url]: https://github.com/ACking-you/byte_douyin_project/network/members
+[stars-shield]: https://img.shields.io/github/stars/ACking-you/byte_douyin_project.svg?style=flat-square
+[stars-url]: https://github.com/ACking-you/byte_douyin_project/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ACking-you/byte_douyin_project.svg?style=flat-square
+[issues-url]: https://img.shields.io/github/issues/ACking-you/byte_douyin_project.svg
+[license-shield]: https://img.shields.io/github/license/ACking-you/byte_douyin_project?style=flat-square
+[license-url]: https://github.com/ACking-you/byte_douyin_project/blob/master/LICENSE.txt
+
+
 * [抖音极简版](#抖音极简版)
     * [数据库说明](#数据库说明)
         * [数据库关系说明](#数据库关系说明)
@@ -15,9 +39,6 @@
             * [封面的截取](#封面的截取)
     * [可改进的地方](#可改进的地方)
     * [项目运行](#项目运行)
-
-
-# 抖音极简版
 
 ## 数据库说明
 
