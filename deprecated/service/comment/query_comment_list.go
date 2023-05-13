@@ -3,12 +3,12 @@ package comment
 import (
 	"errors"
 	"fmt"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 	"github.com/ACking-you/byte_douyin_project/util"
 )
 
 type List struct {
-	Comments []*models.Comment `json:"comment_list"`
+	Comments []*models2.Comment `json:"comment_list"`
 }
 
 func QueryCommentList(userId, videoId int64) (*List, error) {
@@ -19,7 +19,7 @@ type QueryCommentListFlow struct {
 	userId  int64
 	videoId int64
 
-	comments []*models.Comment
+	comments []*models2.Comment
 
 	commentList *List
 }
@@ -42,17 +42,17 @@ func (q *QueryCommentListFlow) Do() (*List, error) {
 }
 
 func (q *QueryCommentListFlow) checkNum() error {
-	if !models.NewUserInfoDAO().IsUserExistById(q.userId) {
+	if !models2.NewUserInfoDAO().IsUserExistById(q.userId) {
 		return fmt.Errorf("用户%d处于登出状态", q.userId)
 	}
-	if !models.NewVideoDAO().IsVideoExistById(q.videoId) {
+	if !models2.NewVideoDAO().IsVideoExistById(q.videoId) {
 		return fmt.Errorf("视频%d不存在或已经被删除", q.videoId)
 	}
 	return nil
 }
 
 func (q *QueryCommentListFlow) prepareData() error {
-	err := models.NewCommentDAO().QueryCommentListByVideoId(q.videoId, &q.comments)
+	err := models2.NewCommentDAO().QueryCommentListByVideoId(q.videoId, &q.comments)
 	if err != nil {
 		return err
 	}

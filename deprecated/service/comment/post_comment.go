@@ -3,7 +3,7 @@ package comment
 import (
 	"errors"
 	"fmt"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 	"github.com/ACking-you/byte_douyin_project/util"
 )
 
@@ -13,7 +13,7 @@ const (
 )
 
 type Response struct {
-	MyComment *models.Comment `json:"comment"`
+	MyComment *models2.Comment `json:"comment"`
 }
 
 func PostComment(userId int64, videoId int64, commentId int64, actionType int64, commentText string) (*Response, error) {
@@ -27,7 +27,7 @@ type PostCommentFlow struct {
 	actionType  int64
 	commentText string
 
-	comment *models.Comment
+	comment *models2.Comment
 
 	*Response
 }
@@ -51,9 +51,9 @@ func (p *PostCommentFlow) Do() (*Response, error) {
 }
 
 // CreateComment 增加评论
-func (p *PostCommentFlow) CreateComment() (*models.Comment, error) {
-	comment := models.Comment{UserInfoId: p.userId, VideoId: p.videoId, Content: p.commentText}
-	err := models.NewCommentDAO().AddCommentAndUpdateCount(&comment)
+func (p *PostCommentFlow) CreateComment() (*models2.Comment, error) {
+	comment := models2.Comment{UserInfoId: p.userId, VideoId: p.videoId, Content: p.commentText}
+	err := models2.NewCommentDAO().AddCommentAndUpdateCount(&comment)
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +62,15 @@ func (p *PostCommentFlow) CreateComment() (*models.Comment, error) {
 }
 
 // DeleteComment 删除评论
-func (p *PostCommentFlow) DeleteComment() (*models.Comment, error) {
+func (p *PostCommentFlow) DeleteComment() (*models2.Comment, error) {
 	//获取comment
-	var comment models.Comment
-	err := models.NewCommentDAO().QueryCommentById(p.commentId, &comment)
+	var comment models2.Comment
+	err := models2.NewCommentDAO().QueryCommentById(p.commentId, &comment)
 	if err != nil {
 		return nil, err
 	}
 	//删除comment
-	err = models.NewCommentDAO().DeleteCommentAndUpdateCountById(p.commentId, p.videoId)
+	err = models2.NewCommentDAO().DeleteCommentAndUpdateCountById(p.commentId, p.videoId)
 	if err != nil {
 		return nil, err
 	}
@@ -78,10 +78,10 @@ func (p *PostCommentFlow) DeleteComment() (*models.Comment, error) {
 }
 
 func (p *PostCommentFlow) checkNum() error {
-	if !models.NewUserInfoDAO().IsUserExistById(p.userId) {
+	if !models2.NewUserInfoDAO().IsUserExistById(p.userId) {
 		return fmt.Errorf("用户%d不存在", p.userId)
 	}
-	if !models.NewVideoDAO().IsVideoExistById(p.videoId) {
+	if !models2.NewVideoDAO().IsVideoExistById(p.videoId) {
 		return fmt.Errorf("视频%d不存在", p.videoId)
 	}
 	if p.actionType != CREATE && p.actionType != DELETE {
@@ -105,8 +105,8 @@ func (p *PostCommentFlow) prepareData() error {
 
 func (p *PostCommentFlow) packData() error {
 	//填充字段
-	userInfo := models.UserInfo{}
-	_ = models.NewUserInfoDAO().QueryUserInfoById(p.comment.UserInfoId, &userInfo)
+	userInfo := models2.UserInfo{}
+	_ = models2.NewUserInfoDAO().QueryUserInfoById(p.comment.UserInfoId, &userInfo)
 	p.comment.User = userInfo
 	_ = util.FillCommentFields(p.comment)
 

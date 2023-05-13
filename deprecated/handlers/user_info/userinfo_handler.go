@@ -2,14 +2,14 @@ package user_info
 
 import (
 	"errors"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserResponse struct {
-	models.CommonResponse
-	User *models.UserInfo `json:"user"`
+	models2.CommonResponse
+	User *models2.UserInfo `json:"user"`
 }
 
 func UserInfoHandler(c *gin.Context) {
@@ -40,9 +40,9 @@ func (p *ProxyUserInfo) DoQueryUserInfoByUserId(rawId interface{}) error {
 		return errors.New("解析userId失败")
 	}
 	//由于得到userinfo不需要组装model层的数据，所以直接调用model层的接口
-	userinfoDAO := models.NewUserInfoDAO()
+	userinfoDAO := models2.NewUserInfoDAO()
 
-	var userInfo models.UserInfo
+	var userInfo models2.UserInfo
 	err := userinfoDAO.QueryUserInfoById(userId, &userInfo)
 	if err != nil {
 		return err
@@ -53,13 +53,13 @@ func (p *ProxyUserInfo) DoQueryUserInfoByUserId(rawId interface{}) error {
 
 func (p *ProxyUserInfo) UserInfoError(msg string) {
 	p.c.JSON(http.StatusOK, UserResponse{
-		CommonResponse: models.CommonResponse{StatusCode: 1, StatusMsg: msg},
+		CommonResponse: models2.CommonResponse{StatusCode: 1, StatusMsg: msg},
 	})
 }
 
-func (p *ProxyUserInfo) UserInfoOk(user *models.UserInfo) {
+func (p *ProxyUserInfo) UserInfoOk(user *models2.UserInfo) {
 	p.c.JSON(http.StatusOK, UserResponse{
-		CommonResponse: models.CommonResponse{StatusCode: 0},
+		CommonResponse: models2.CommonResponse{StatusCode: 0},
 		User:           user,
 	})
 }

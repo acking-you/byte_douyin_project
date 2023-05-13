@@ -3,11 +3,11 @@ package video
 import (
 	"errors"
 	"github.com/ACking-you/byte_douyin_project/cache"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 )
 
 type List struct {
-	Videos []*models.Video `json:"video_list,omitempty"`
+	Videos []*models2.Video `json:"video_list,omitempty"`
 }
 
 func QueryVideoListByUserId(userId int64) (*List, error) {
@@ -20,7 +20,7 @@ func NewQueryVideoListByUserIdFlow(userId int64) *QueryVideoListByUserIdFlow {
 
 type QueryVideoListByUserIdFlow struct {
 	userId int64
-	videos []*models.Video
+	videos []*models2.Video
 
 	videoList *List
 }
@@ -37,7 +37,7 @@ func (q *QueryVideoListByUserIdFlow) Do() (*List, error) {
 
 func (q *QueryVideoListByUserIdFlow) checkNum() error {
 	//检查userId是否存在
-	if !models.NewUserInfoDAO().IsUserExistById(q.userId) {
+	if !models2.NewUserInfoDAO().IsUserExistById(q.userId) {
 		return errors.New("用户不存在")
 	}
 
@@ -46,13 +46,13 @@ func (q *QueryVideoListByUserIdFlow) checkNum() error {
 
 //注意：Video由于在数据库中没有存储作者信息，所以需要手动填充
 func (q *QueryVideoListByUserIdFlow) packData() error {
-	err := models.NewVideoDAO().QueryVideoListByUserId(q.userId, &q.videos)
+	err := models2.NewVideoDAO().QueryVideoListByUserId(q.userId, &q.videos)
 	if err != nil {
 		return err
 	}
 	//作者信息查询
-	var userInfo models.UserInfo
-	err = models.NewUserInfoDAO().QueryUserInfoById(q.userId, &userInfo)
+	var userInfo models2.UserInfo
+	err = models2.NewUserInfoDAO().QueryUserInfoById(q.userId, &userInfo)
 	p := cache.NewProxyIndexMap()
 	if err != nil {
 		return err

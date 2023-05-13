@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/ACking-you/byte_douyin_project/models"
+	"github.com/ACking-you/byte_douyin_project/deprecated/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

@@ -3,7 +3,7 @@ package video
 import (
 	"errors"
 	"github.com/ACking-you/byte_douyin_project/cache"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 )
 
 const (
@@ -49,7 +49,7 @@ func (p *PostFavorStateFlow) Do() error {
 // PlusOperation 点赞操作
 func (p *PostFavorStateFlow) PlusOperation() error {
 	//视频点赞数目+1
-	err := models.NewVideoDAO().PlusOneFavorByUserIdAndVideoId(p.userId, p.videoId)
+	err := models2.NewVideoDAO().PlusOneFavorByUserIdAndVideoId(p.userId, p.videoId)
 	if err != nil {
 		return errors.New("不要重复点赞")
 	}
@@ -61,7 +61,7 @@ func (p *PostFavorStateFlow) PlusOperation() error {
 // MinusOperation 取消点赞
 func (p *PostFavorStateFlow) MinusOperation() error {
 	//视频点赞数目-1
-	err := models.NewVideoDAO().MinusOneFavorByUserIdAndVideoId(p.userId, p.videoId)
+	err := models2.NewVideoDAO().MinusOneFavorByUserIdAndVideoId(p.userId, p.videoId)
 	if err != nil {
 		return errors.New("点赞数目已经为0")
 	}
@@ -71,7 +71,7 @@ func (p *PostFavorStateFlow) MinusOperation() error {
 }
 
 func (p *PostFavorStateFlow) checkNum() error {
-	if !models.NewUserInfoDAO().IsUserExistById(p.userId) {
+	if !models2.NewUserInfoDAO().IsUserExistById(p.userId) {
 		return errors.New("用户不存在")
 	}
 	if p.actionType != PLUS && p.actionType != MINUS {

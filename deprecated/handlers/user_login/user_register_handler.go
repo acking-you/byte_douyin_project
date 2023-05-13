@@ -2,14 +2,14 @@ package user_login
 
 import (
 	"github.com/ACking-you/byte_douyin_project/models"
-	"github.com/ACking-you/byte_douyin_project/service/user_login"
+	user_login2 "github.com/ACking-you/byte_douyin_project/service/user_login"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type UserRegisterResponse struct {
 	models.CommonResponse
-	*user_login.LoginResponse
+	*user_login2.LoginResponse
 }
 
 func UserRegisterHandler(c *gin.Context) {
@@ -25,7 +25,7 @@ func UserRegisterHandler(c *gin.Context) {
 		})
 		return
 	}
-	registerResponse, err := user_login.PostUserLogin(username, password)
+	registerResponse, err := user_login2.PostUserLogin(username, password)
 
 	if err != nil {
 		c.JSON(http.StatusOK, UserRegisterResponse{

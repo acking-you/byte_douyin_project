@@ -3,7 +3,7 @@ package user_login
 import (
 	"errors"
 	"github.com/ACking-you/byte_douyin_project/middleware"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 )
 
 // PostUserLogin 注册用户并得到token和id
@@ -58,17 +58,17 @@ func (q *PostUserLoginFlow) checkNum() error {
 func (q *PostUserLoginFlow) updateData() error {
 
 	//准备好userInfo,默认name为username
-	userLogin := models.UserLogin{Username: q.username, Password: q.password}
-	userinfo := models.UserInfo{User: &userLogin, Name: q.username}
+	userLogin := models2.UserLogin{Username: q.username, Password: q.password}
+	userinfo := models2.UserInfo{User: &userLogin, Name: q.username}
 
 	//判断用户名是否已经存在
-	userLoginDAO := models.NewUserLoginDao()
+	userLoginDAO := models2.NewUserLoginDao()
 	if userLoginDAO.IsUserExistByUsername(q.username) {
 		return errors.New("用户名已存在")
 	}
 
 	//更新操作，由于userLogin属于userInfo，故更新userInfo即可，且由于传入的是指针，所以插入的数据内容也是清楚的
-	userInfoDAO := models.NewUserInfoDAO()
+	userInfoDAO := models2.NewUserInfoDAO()
 	err := userInfoDAO.AddUserInfo(&userinfo)
 	if err != nil {
 		return err

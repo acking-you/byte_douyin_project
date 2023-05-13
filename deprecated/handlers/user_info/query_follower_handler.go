@@ -3,14 +3,14 @@ package user_info
 import (
 	"errors"
 	"github.com/ACking-you/byte_douyin_project/models"
-	"github.com/ACking-you/byte_douyin_project/service/user_info"
+	user_info2 "github.com/ACking-you/byte_douyin_project/service/user_info"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type FollowerListResponse struct {
 	models.CommonResponse
-	*user_info.FollowerList
+	*user_info2.FollowerList
 }
 
 func QueryFollowerHandler(c *gin.Context) {
@@ -22,7 +22,7 @@ type ProxyQueryFollowerHandler struct {
 
 	userId int64
 
-	*user_info.FollowerList
+	*user_info2.FollowerList
 }
 
 func NewProxyQueryFollowerHandler(context *gin.Context) *ProxyQueryFollowerHandler {
@@ -36,7 +36,7 @@ func (p *ProxyQueryFollowerHandler) Do() {
 		return
 	}
 	if err = p.prepareData(); err != nil {
-		if errors.Is(err, user_info.ErrUserNotExist) {
+		if errors.Is(err, user_info2.ErrUserNotExist) {
 			p.SendError(err.Error())
 		} else {
 			p.SendError("准备数据出错")
@@ -57,7 +57,7 @@ func (p *ProxyQueryFollowerHandler) parseNum() error {
 }
 
 func (p *ProxyQueryFollowerHandler) prepareData() error {
-	list, err := user_info.QueryFollowerList(p.userId)
+	list, err := user_info2.QueryFollowerList(p.userId)
 	if err != nil {
 		return err
 	}

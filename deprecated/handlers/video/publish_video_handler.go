@@ -4,7 +4,7 @@ import (
 	"github.com/ACking-you/byte_douyin_project/config"
 	"github.com/ACking-you/byte_douyin_project/models"
 	"github.com/ACking-you/byte_douyin_project/service/video"
-	"github.com/ACking-you/byte_douyin_project/util"
+	util2 "github.com/ACking-you/byte_douyin_project/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
@@ -54,7 +54,7 @@ func PublishVideoHandler(c *gin.Context) {
 			PublishVideoError(c, "不支持的视频格式")
 			continue
 		}
-		name := util.NewFileName(userId) //根据userId得到唯一的文件名
+		name := util2.NewFileName(userId) //根据userId得到唯一的文件名
 		filename := name + suffix
 		savePath := filepath.Join(config.Global.StaticSourcePath, filename)
 		err = c.SaveUploadedFile(file, savePath)
@@ -63,13 +63,13 @@ func PublishVideoHandler(c *gin.Context) {
 			continue
 		}
 		//截取一帧画面作为封面
-		err = util.SaveImageFromVideo(name, false)
+		err = util2.SaveImageFromVideo(name, false)
 		if err != nil {
 			PublishVideoError(c, err.Error())
 			continue
 		}
 		//数据库持久化
-		err := video.PostVideo(userId, filename, name+util.GetDefaultImageSuffix(), title)
+		err := video.PostVideo(userId, filename, name+util2.GetDefaultImageSuffix(), title)
 		if err != nil {
 			PublishVideoError(c, err.Error())
 			continue

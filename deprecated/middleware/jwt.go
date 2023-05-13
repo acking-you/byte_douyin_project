@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -16,7 +16,7 @@ type Claims struct {
 }
 
 // ReleaseToken 颁发token
-func ReleaseToken(user models.UserLogin) (string, error) {
+func ReleaseToken(user models2.UserLogin) (string, error) {
 	expirationTime := time.Now().Add(7 * 24 * time.Hour)
 	claims := &Claims{
 		UserId: user.UserInfoId,
@@ -61,14 +61,14 @@ func JWTMiddleWare() gin.HandlerFunc {
 		}
 		//用户不存在
 		if tokenStr == "" {
-			c.JSON(http.StatusOK, models.CommonResponse{StatusCode: 401, StatusMsg: "用户不存在"})
+			c.JSON(http.StatusOK, models2.CommonResponse{StatusCode: 401, StatusMsg: "用户不存在"})
 			c.Abort() //阻止执行
 			return
 		}
 		//验证token
 		tokenStruck, ok := ParseToken(tokenStr)
 		if !ok {
-			c.JSON(http.StatusOK, models.CommonResponse{
+			c.JSON(http.StatusOK, models2.CommonResponse{
 				StatusCode: 403,
 				StatusMsg:  "token不正确",
 			})
@@ -77,7 +77,7 @@ func JWTMiddleWare() gin.HandlerFunc {
 		}
 		//token超时
 		if time.Now().Unix() > tokenStruck.ExpiresAt {
-			c.JSON(http.StatusOK, models.CommonResponse{
+			c.JSON(http.StatusOK, models2.CommonResponse{
 				StatusCode: 402,
 				StatusMsg:  "token过期",
 			})

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/ACking-you/byte_douyin_project/cache"
 	"github.com/ACking-you/byte_douyin_project/config"
-	"github.com/ACking-you/byte_douyin_project/models"
+	models2 "github.com/ACking-you/byte_douyin_project/models"
 	"log"
 	"path/filepath"
 	"time"
@@ -20,7 +20,7 @@ func GetFileUrl(fileName string) string {
 func NewFileName(userId int64) string {
 	var count int64
 
-	err := models.NewVideoDAO().QueryVideoCountByUserId(userId, &count)
+	err := models2.NewVideoDAO().QueryVideoCountByUserId(userId, &count)
 	if err != nil {
 		log.Println(err)
 	}
@@ -29,18 +29,18 @@ func NewFileName(userId int64) string {
 
 // FillVideoListFields 填充每个视频的作者信息（因为作者与视频的一对多关系，数据库中存下的是作者的id
 // 当userId>0时，我们判断当前为登录状态，其余情况为未登录状态，则不需要填充IsFavorite字段
-func FillVideoListFields(userId int64, videos *[]*models.Video) (*time.Time, error) {
+func FillVideoListFields(userId int64, videos *[]*models2.Video) (*time.Time, error) {
 	size := len(*videos)
 	if videos == nil || size == 0 {
 		return nil, errors.New("util.FillVideoListFields videos为空")
 	}
-	dao := models.NewUserInfoDAO()
+	dao := models2.NewUserInfoDAO()
 	p := cache.NewProxyIndexMap()
 
 	latestTime := (*videos)[size-1].CreatedAt //获取最近的投稿时间
 	//添加作者信息，以及is_follow状态
 	for i := 0; i < size; i++ {
-		var userInfo models.UserInfo
+		var userInfo models2.UserInfo
 		err := dao.QueryUserInfoById((*videos)[i].UserInfoId, &userInfo)
 		if err != nil {
 			continue
