@@ -13,7 +13,7 @@ func InitDB() {
 	DB, err = gorm.Open(mysql.Open(config.DBConnectString()), &gorm.Config{
 		PrepareStmt:            true, //缓存预编译命令
 		SkipDefaultTransaction: true, //禁用默认事务操作
-		//Logger:                 logger.Default.LogMode(logger.Info), //打印sql语句
+		//Logger:                 logger.Default.LogMode(logger.Global), //打印sql语句
 	})
 	if err != nil {
 		panic(err)

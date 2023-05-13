@@ -4,7 +4,7 @@ host = "127.0.0.1"
 port = 3306
 database = "douyin"
 username = "root"
-password = "08898247"
+password = "123"
 charset = "utf8mb4"
 parse_time = true
 loc = "Local"
@@ -12,15 +12,15 @@ loc = "Local"
 #nosql配置，用于存储每个用户是否对某个视频点赞，以及关注了某个人（主要用于反馈前端情况，比如点了赞后会变成红心
 [redis]
 host = "127.0.0.1"
-port = 6379
+port = 49153
 database = 0
 
 #记录当前服务器的ip和启动端口号，当前服务器的ip用于生成对应的视频链接地址
 [server]
-ip = "192.168.33.251"
+ip = "127.0.0.1"
 port = 8080
 
 #用于保存资源的路径，以及用于截图工具的路径（截图工具放在lib目录
 [path]
-ffmpeg_path = "D:\\GOLandPRo\\douyin_pro\\byte_douyin_project\\lib\\ffmpeg.exe"
-static_source_path = "D:\\GOLandPRo\\douyin_pro\\byte_douyin_project\\static"
+ffmpeg_path = "./lib/ffmpeg.exe"
+static_source_path = "./static"

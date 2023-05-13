@@ -71,7 +71,7 @@ func (v *Video2Image) GetQueryString() (ret string, err error) {
 		err = errors.New("输入输出路径未指定")
 		return
 	}
-	ret = config.Info.FfmpegPath
+	ret = config.Global.FfmpegPath
 	ret += paramJoin(inputVideoPathOption, v.InputPath)
 	ret += paramJoin(formatToImageOption, "image2")
 	if v.Filter != "" {

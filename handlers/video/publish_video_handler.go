@@ -1,6 +1,7 @@
 package video
 
 import (
+	"github.com/ACking-you/byte_douyin_project/config"
 	"github.com/ACking-you/byte_douyin_project/models"
 	"github.com/ACking-you/byte_douyin_project/service/video"
 	"github.com/ACking-you/byte_douyin_project/util"
@@ -55,14 +56,14 @@ func PublishVideoHandler(c *gin.Context) {
 		}
 		name := util.NewFileName(userId) //根据userId得到唯一的文件名
 		filename := name + suffix
-		savePath := filepath.Join("./static", filename)
+		savePath := filepath.Join(config.Global.StaticSourcePath, filename)
 		err = c.SaveUploadedFile(file, savePath)
 		if err != nil {
 			PublishVideoError(c, err.Error())
 			continue
 		}
 		//截取一帧画面作为封面
-		err = util.SaveImageFromVideo(name, true)
+		err = util.SaveImageFromVideo(name, false)
 		if err != nil {
 			PublishVideoError(c, err.Error())
 			continue

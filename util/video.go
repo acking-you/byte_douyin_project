@@ -12,7 +12,7 @@ import (
 )
 
 func GetFileUrl(fileName string) string {
-	base := fmt.Sprintf("http://%s:%d/static/%s", config.Info.IP, config.Info.Port, fileName)
+	base := fmt.Sprintf("http://%s:%d/static/%s", config.Global.IP, config.Global.Port, fileName)
 	return base
 }
 
@@ -62,8 +62,8 @@ func SaveImageFromVideo(name string, isDebug bool) error {
 	if isDebug {
 		v2i.Debug()
 	}
-	v2i.InputPath = filepath.Join(config.Info.StaticSourcePath, name+defaultVideoSuffix)
-	v2i.OutputPath = filepath.Join(config.Info.StaticSourcePath, name+defaultImageSuffix)
+	v2i.InputPath = filepath.Join(config.Global.StaticSourcePath, name+defaultVideoSuffix)
+	v2i.OutputPath = filepath.Join(config.Global.StaticSourcePath, name+defaultImageSuffix)
 	v2i.FrameCount = 1
 	queryString, err := v2i.GetQueryString()
 	if err != nil {

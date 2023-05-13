@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/ACking-you/byte_douyin_project/config"
 	"github.com/ACking-you/byte_douyin_project/handlers/comment"
 	"github.com/ACking-you/byte_douyin_project/handlers/user_info"
 	"github.com/ACking-you/byte_douyin_project/handlers/user_login"
@@ -10,11 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitDouyinRouter() *gin.Engine {
+func Init() *gin.Engine {
 	models.InitDB()
 	r := gin.Default()
 
-	r.Static("static", "./static")
+	r.Static("static", config.Global.StaticSourcePath)
 
 	baseGroup := r.Group("/douyin")
 	//根据灵活性考虑是否加入JWT中间件来进行鉴权，还是在之后再做鉴权

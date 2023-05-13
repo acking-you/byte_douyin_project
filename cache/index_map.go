@@ -20,9 +20,9 @@ const (
 func init() {
 	rdb = redis.NewClient(
 		&redis.Options{
-			Addr:     fmt.Sprintf("%s:%d", config.Info.RDB.IP, config.Info.RDB.Port),
+			Addr:     fmt.Sprintf("%s:%d", config.Global.RDB.IP, config.Global.RDB.Port),
 			Password: "", //没有设置密码
-			DB:       config.Info.RDB.Database,
+			DB:       config.Global.RDB.Database,
 		})
 }
 
