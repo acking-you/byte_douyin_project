@@ -1,4 +1,4 @@
-
+[写给后续参加字节跳动青训营的同学](https://github.com/ACking-you/byte_douyin_project/issues/10)
 # 抖音极简版
 <!-- PROJECT SHIELDS -->
 
