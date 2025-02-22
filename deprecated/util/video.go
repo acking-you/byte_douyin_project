@@ -30,10 +30,10 @@ func NewFileName(userId int64) string {
 // FillVideoListFields 填充每个视频的作者信息（因为作者与视频的一对多关系，数据库中存下的是作者的id
 // 当userId>0时，我们判断当前为登录状态，其余情况为未登录状态，则不需要填充IsFavorite字段
 func FillVideoListFields(userId int64, videos *[]*models2.Video) (*time.Time, error) {
-	size := len(*videos)
-	if videos == nil || size == 0 {
+	if videos == nil || (len(*videos) == 0) {
 		return nil, errors.New("util.FillVideoListFields videos为空")
 	}
+	size := len(*videos)
 	dao := models2.NewUserInfoDAO()
 	p := cache.NewProxyIndexMap()
 
@@ -58,16 +58,9 @@ func FillVideoListFields(userId int64, videos *[]*models2.Video) (*time.Time, er
 // SaveImageFromVideo 将视频切一帧保存到本地
 // isDebug用于控制是否打印出执行的ffmepg命令
 func SaveImageFromVideo(name string, isDebug bool) error {
-	v2i := NewVideo2Image()
-	if isDebug {
-		v2i.Debug()
-	}
-	v2i.InputPath = filepath.Join(config.Global.StaticSourcePath, name+defaultVideoSuffix)
-	v2i.OutputPath = filepath.Join(config.Global.StaticSourcePath, name+defaultImageSuffix)
-	v2i.FrameCount = 1
-	queryString, err := v2i.GetQueryString()
-	if err != nil {
-		return err
-	}
-	return v2i.ExecCommand(queryString)
+	return NewVideo2Image().
+		SetInputPath(filepath.Join(config.Global.StaticSourcePath, name+GetDefaultVideoSuffix())).
+		SetOutputPath(filepath.Join(config.Global.StaticSourcePath, name+GetDefaultImageSuffix())).
+		SetFrameCount(1).
+		SetDebug(isDebug).Execute()
 }

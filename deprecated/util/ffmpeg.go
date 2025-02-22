@@ -1,104 +1,149 @@
 package util
 
-//#include <stdlib.h>
-//int startCmd(const char* cmd){
-//	  return system(cmd);
-//}
-import "C"
-
 import (
 	"errors"
 	"fmt"
+	"os/exec"
+	"path/filepath"
+	"strconv"
+	"sync"
+
 	"github.com/ACking-you/byte_douyin_project/config"
 	"log"
-	"unsafe"
 )
 
-type Video2Image struct {
-	InputPath  string
-	OutputPath string
-	StartTime  string
-	KeepTime   string
-	Filter     string
-	FrameCount int64
-	debug      bool
-}
-
-func NewVideo2Image() *Video2Image {
-	return &videoChanger
-}
-
-var videoChanger Video2Image
-
-//ffmpeg的参数
-const (
-	inputVideoPathOption = "-i"
-	startTimeOption      = "-ss"
-	keepTimeOption       = "-t"
-	videoFilterOption    = "-vf"
-	formatToImageOption  = "-f"
-	autoReWriteOption    = "-y"
-	framesOption         = "-frames:v"
-)
-
+// 可以更改
 var (
+	globalMutex        sync.RWMutex
 	defaultVideoSuffix = ".mp4"
 	defaultImageSuffix = ".jpg"
 )
 
-func ChangeVideoDefaultSuffix(suffix string) {
-	defaultVideoSuffix = suffix
+type Video2Image struct {
+	inputPath  string
+	outputPath string
+	startTime  string
+	keepTime   string
+	filter     string
+	frameCount int
+	debug      bool
 }
 
-func ChangeImageDefaultSuffix(suffix string) {
-	defaultImageSuffix = suffix
+func NewVideo2Image() *Video2Image {
+	return &Video2Image{} // 每次返回新实例，避免共享状态
+}
+
+func GetDefaultVideoSuffix() string {
+	globalMutex.RLock()
+	defer globalMutex.RUnlock()
+	return defaultVideoSuffix
 }
 
 func GetDefaultImageSuffix() string {
+	globalMutex.RLock()
+	defer globalMutex.RUnlock()
 	return defaultImageSuffix
 }
 
-func paramJoin(s1, s2 string) string {
-	return fmt.Sprintf(" %s %s ", s1, s2)
+// ChangeVideoDefaultSuffix 全局配置修改方法（线程安全）
+func ChangeVideoDefaultSuffix(suffix string) {
+	globalMutex.Lock()
+	defer globalMutex.Unlock()
+	defaultVideoSuffix = normalizeExtension(suffix)
 }
 
-func (v *Video2Image) Debug() {
-	v.debug = true
+func ChangeImageDefaultSuffix(suffix string) {
+	globalMutex.Lock()
+	defer globalMutex.Unlock()
+	defaultImageSuffix = normalizeExtension(suffix)
 }
 
-func (v *Video2Image) GetQueryString() (ret string, err error) {
-	if v.InputPath == "" || v.OutputPath == "" {
-		err = errors.New("输入输出路径未指定")
-		return
+func normalizeExtension(ext string) string {
+	if ext == "" {
+		return ext
 	}
-	ret = config.Global.FfmpegPath
-	ret += paramJoin(inputVideoPathOption, v.InputPath)
-	ret += paramJoin(formatToImageOption, "image2")
-	if v.Filter != "" {
-		ret += paramJoin(videoFilterOption, v.Filter)
+	if ext[0] != '.' {
+		return "." + ext
 	}
-	if v.StartTime != "" {
-		ret += paramJoin(startTimeOption, v.StartTime)
-	}
-	if v.KeepTime != "" {
-		ret += paramJoin(keepTimeOption, v.KeepTime)
-	}
-	if v.FrameCount != 0 {
-		ret += paramJoin(framesOption, fmt.Sprintf("%d", v.FrameCount))
-	}
-	ret += paramJoin(autoReWriteOption, v.OutputPath)
-	return
+	return ext
 }
 
-func (v *Video2Image) ExecCommand(cmd string) error {
+// SetInputPath 方法链式调用（非共享实例，无需加锁）
+func (v *Video2Image) SetInputPath(path string) *Video2Image {
+	v.inputPath = path
+	return v
+}
+
+func (v *Video2Image) SetOutputPath(path string) *Video2Image {
+	v.outputPath = path
+	return v
+}
+
+func (v *Video2Image) SetTimeOptions(start, duration string) *Video2Image {
+	v.startTime = start
+	v.keepTime = duration
+	return v
+}
+
+func (v *Video2Image) SetFilter(filter string) *Video2Image {
+	v.filter = filter
+	return v
+}
+
+func (v *Video2Image) SetFrameCount(count int) *Video2Image {
+	v.frameCount = count
+	return v
+}
+
+func (v *Video2Image) SetDebug(debug bool) *Video2Image {
+	v.debug = debug
+	return v
+}
+
+func (v *Video2Image) buildArgs() ([]string, error) {
+	if v.inputPath == "" || v.outputPath == "" {
+		return nil, errors.New("input and output path must be specified")
+	}
+
+	args := []string{
+		"-i", filepath.ToSlash(v.inputPath),
+		"-f", "image2",
+	}
+
+	if v.filter != "" {
+		args = append(args, "-vf", v.filter)
+	}
+	if v.startTime != "" {
+		args = append(args, "-ss", v.startTime)
+	}
+	if v.keepTime != "" {
+		args = append(args, "-t", v.keepTime)
+	}
+	if v.frameCount > 0 {
+		args = append(args, "-frames:v", strconv.Itoa(v.frameCount))
+	}
+
+	args = append(args, "-y", filepath.ToSlash(v.outputPath))
+	return args, nil
+}
+
+func (v *Video2Image) Execute() error {
+	args, err := v.buildArgs()
+	if err != nil {
+		return fmt.Errorf("参数构建失败: %w", err)
+	}
+
+	ffmpegPath := filepath.FromSlash(config.Global.FfmpegPath)
+
+	cmd := exec.Command(ffmpegPath, args...)
 	if v.debug {
-		log.Println(cmd)
+		log.Printf("执行命令: %q", cmd.String())
+		cmd.Stdout = log.Writer()
+		cmd.Stderr = log.Writer()
 	}
-	cCmd := C.CString(cmd)
-	defer C.free(unsafe.Pointer(cCmd))
-	status := C.startCmd(cCmd)
-	if status != 0 {
-		return errors.New("视频切截图失败")
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("ffmpeg执行失败: %w (命令: %q)", err, cmd.String())
 	}
 	return nil
 }
